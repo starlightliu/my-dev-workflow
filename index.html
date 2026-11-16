@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>我的开发工作流</title>
+<title>我的开发工作流 V2</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f172a'/%3E%3Cpath d='M18 40V24l14-8 14 8v16l-14 8-14-8Z' fill='none' stroke='%23fbbf24' stroke-width='4' stroke-linejoin='round'/%3E%3Ccircle cx='32' cy='32' r='5' fill='%2338bdf8'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -339,6 +339,11 @@ summary { cursor: pointer; font: 500 var(--t-label) var(--font-mono); margin-bot
 }
 </style>
 <style>
+.version-switch { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+#workflow .version-switch a { display: inline-flex; align-items: center; justify-content: center; min-width: 42px; min-height: 34px; padding: 4px 7px; border: 1px solid var(--border-bright); border-radius: 6px; font: 700 12px/1.4 var(--sans-map); text-decoration: none; }
+#workflow .version-switch a:hover, #workflow .version-switch a:focus-visible { background: var(--border); }
+#workflow .version-switch a[aria-current="page"] { background: var(--text); color: var(--surface); }
+.workflow-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 html[data-register="instrument"] {
   color-scheme: dark;
   --bg: #151b23;
@@ -376,7 +381,6 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
   outline-offset: 3px;
 }
 .shape { display: inline-block; flex: none; width: 7px; height: 7px; background: currentColor; border-radius: 50%; }
-.shape[data-plugin="pt"] { border-radius: 0; transform: rotate(45deg); }
 #workflow-map { margin: 0; }
 .map-scroll { overflow-x: auto; scrollbar-color: #667487 var(--bg); }
 .phase-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); min-width: 1200px; padding: 4px 0 10px; }
@@ -503,7 +507,7 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
 </svg>
 <main id="workflow">
   <header class="masthead">
-    <h1>我的开发工作流</h1>
+    <div class="workflow-title"><h1>我的开发工作流</h1><nav class="version-switch" aria-label="工作流版本"><a href="./v1.html" aria-label="V1 旧版">V1</a><a href="./" aria-label="V2 Agent Skills" aria-current="page">V2</a></nav></div>
     <div class="controls" aria-label="技能筛选">
       <label>查找技能 <input id="query" type="search" placeholder="名称、场景或工单" autocomplete="off"></label>
       <button class="control" id="extras" type="button" aria-pressed="false" aria-controls="phases">展开按需技能</button>
@@ -528,51 +532,31 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
 </main>
 <script>
 
-const skills = [["pstack-codex:how","沿调用链读代码","第一次碰这段代码｜不确定校验应该放在哪层","用源码说明入口、调用链、数据流和归属。","从用户入口追到处理函数｜追踪请求和数据读写｜标出负责校验的层与源码位置","用 how 追踪新增电影从表单提交到接口再到入库的路径，标出响应解析在哪一层。",["pstack-codex:why","pstack-codex:architect"]],
-["pstack-codex:why","追查历史决策","想弄清实现为何如此｜准备改动已采纳的约定","从提交、工单和决策记录还原当时的约束，把有证据的结论和推断分开。","定位相关代码和历史提交｜对照决策、工单与合并记录｜标明仍未知的动机","用 why 查连续录入为何保留部分字段，对照需求工单、合并记录和相关提交。",["pstack-codex:teach"]],
-["mattpocock-skills:grill-with-docs","追问需求，记录决策","已有仓库，关键业务边界还没定","借助项目词汇表和架构决策追问；确定的领域约定按仓库规则落档。","读现有词汇和决策｜按依赖逐轮确认选择｜记录稳定术语或决策","用 grill-with-docs 推敲「放弃输入」对电影表单和磁力表单分别意味着什么。",["mattpocock-skills:domain-modeling","mattpocock-skills:to-spec"]],
-["mattpocock-skills:to-spec","把共识整理成规格","需求已谈清，需要正式规格和验收条件","把已有共识整理成规格，和用户核对测试入口，并按授权发布。","核对仓库、词汇和约束｜写清行为、范围和验收｜按授权发布到项目工单系统","用 to-spec 整理连续录入与离开确认的验收条件，发布前先核对现有工单的范围。",["mattpocock-skills:to-tickets"]],
-["mattpocock-skills:to-tickets","拆可独立验收的切片","规格跨度较大，需分层交付","按用户可验证的行为拆垂直切片，明确阻塞关系。","查已有工单和项目结构｜提出可独立验收的切片｜确认拆法并按授权写入依赖","用 to-tickets 拟定连续录入、离开保护两块的验收条件与依赖，先查是否已有对应工单。",["mattpocock-skills:implement","mattpocock-skills:implement-spec"]],
-["mattpocock-skills:ask-matt","按问题找技能","有目标，但想不起从哪个技能开始","根据任务状态推荐路径，并查对应技能原文。","说清目标和已有材料｜判断所处阶段｜核对候选技能的前提","用 ask-matt 判断手里只有一个「误提交」现象时，从哪条路径切入。",["mattpocock-skills:diagnosing-bugs"]],
-["mattpocock-skills:grilling","按依赖追问决策","一个决定会改变后续问题","按依赖分轮确认选择。能从项目查明的事实先查证。","列出决定及依赖｜先问前置已确定的事项｜根据回答更新下一轮","用 grilling 推敲成功后保留哪些字段，再讨论放弃和继续录入。",["mattpocock-skills:to-spec"]],
-["mattpocock-skills:grill-me","快速检验方案","没有仓库上下文，手上已有一个想法","调用追问流程检验方案，适合先谈清问题再进入仓库。","描述计划和目标｜逐轮回答前置问题｜整理达成的共识","用 grill-me 检验每周娱乐精选的一个初步想法。",["mattpocock-skills:grill-with-docs"]],
-["mattpocock-skills:to-questionnaire","整理待确认问题","关键选择需要由暂时不在场的人回答","把未决问题、背景和选项整理成可填写的问卷。","筛出影响实现的未知项｜写清每个选项的后果｜交给能作决定的人填写","用 to-questionnaire 整理电影录入时哪些字段应保留，交给实际录入者确认。",["mattpocock-skills:to-spec"]],
-["pstack-codex:sharpen","补强任务提示","任务目标明确，证据和验收还太笼统","补上应读的原始材料、具体方法和可验证结果，保留用户的决定。","定位最原始的材料｜指定调查与验证方法｜改写任务并保留未决选择","用 sharpen 改写「检查离开保护」，要求复现导航时序并观察请求与入库。",["mattpocock-skills:implement"]],
-["mattpocock-skills:research","查原始资料并留档","关键技术事实需要文档或实验支撑","查可信的一手资料，区分原文、推断和仍待验证的部分。","把未知改成具体问题｜读官方文档或原始资料｜写成可回查的研究笔记","用 research 查浏览器离开确认的限制，记录官方资料和对现有表单的影响。",["mattpocock-skills:prototype","pstack-codex:architect"]],
-["mattpocock-skills:triage","分流并补齐工单","新反馈、旧票或外部改动需要判定归属","核对原请求、复现情况与验收缺口，按项目的标签和状态流转。","定位 Linear 工单或历史原票｜复现并检查范围｜按授权更新状态或补代理简报","用 triage 判断历史工单的相关反馈该补到离开保护的现有工单，还是另立问题。",["mattpocock-skills:to-tickets","mattpocock-skills:diagnosing-bugs"]],
-["mattpocock-skills:wayfinder","规划跨会话工作","目标横跨多个会话，关键决策还没形成","把决策和依赖建成工单地图，逐个解决当前可推进的决策。","定终点和未决事项｜按授权建地图及子项｜逐个解决无阻塞的决策","用 wayfinder 规划每周个性化娱乐精选，先厘清候选来源和推荐规则。",["mattpocock-skills:research","mattpocock-skills:to-spec"]],
-["pstack-codex:architect","先比较代码形状","跨模块改动，接口归属或类型有几种合理方案","基于现有代码画出几套接口与类型草图，说明各自的改动范围。","读现有入口和调用方｜草拟不同的类型与模块边界｜比较约束后确定方案","用 architect 比较电影和磁力的离开保护应由各表单还是共享导航层负责。",["pstack-codex:arena","mattpocock-skills:prototype"]],
-["pstack-codex:arena","让候选按同一标准比","两个以上的实现方向需要用证据比较","让候选独立成形，用同一套标准评分，再验证选出的方案。","固定任务与评分标准｜独立产出候选并对照｜验证合成方案","用 arena 比较两种表单锁定方案，统一用慢导航下是否还能写入、返回后能否编辑来判定。",["mattpocock-skills:prototype","mattpocock-skills:implement"]],
-["mattpocock-skills:prototype","先跑一个可丢弃原型","对交互或状态的判断需要实际操作","围绕一个设计问题做可运行原型，把观察结果带回原任务。","定一个必须靠操作回答的问题｜隔离实现并实测关键路径｜记录观察和取舍","用 prototype 验证确认离开、慢导航和返回时旧表单的锁定行为。",["mattpocock-skills:handoff","pstack-codex:statechart"]],
-["pstack-codex:statechart","用模型检查状态规则","事件顺序和状态组合多，想找最短反例","用 TLC 检查 TLA+ 模型，把可达状态和最短反例画成状态图。","列出事件、状态和不变量｜运行 TLC 探索状态｜读反例并回查实际实现","用 statechart 建模编辑、确认放弃、等待导航、返回，检查放弃后旧表单不可提交。",["mattpocock-skills:diagnosing-bugs","mattpocock-skills:tdd"]],
-["mattpocock-skills:domain-modeling","统一领域词汇与决策","同一业务概念有多个叫法｜新增稳定决策","梳理业务概念和关系，按仓库规范维护词汇表或决策记录。","读 GLOSSARY.md 和相关决策｜确认词义与边界｜把稳定结论写回对应文件","用 domain-modeling 区分「离开」「放弃输入」和「连续录入」，统一工单与测试里的叫法。",["mattpocock-skills:to-spec","mattpocock-skills:codebase-design"]],
-["mattpocock-skills:codebase-design","找合适的接口和测试入口","模块让调用方知道过多细节｜测试难以落在公共行为上","用模块、接口和测试接入点的共同词汇讨论责任与依赖。","列调用方要知道的细节｜比较收拢行为后的公开接口｜检查测试能否走公开行为","用 codebase-design 讨论电影和磁力的表单保护共享到什么程度，以及测试从哪里驱动。",["pstack-codex:architect","mattpocock-skills:tdd"]],
-["mattpocock-skills:improve-codebase-architecture","调查可收拢的模块","多个地方重复协调，想系统梳理重构机会","扫描代码找可收拢的职责，做可视化报告，再追问用户选择的方向。","读领域词汇与已采纳决策｜找高成本调用关系并画图｜选一个机会讨论边界","用 improve-codebase-architecture 盘点电影与磁力模块中重复的表单状态协调。",["mattpocock-skills:codebase-design","pstack-codex:architect"]],
-["mattpocock-skills:implement","按工单实现一个改动","工单验收明确且前置已满足","按工单限定范围实现，走适用的测试和审查。提交遵循项目授权。","读取正文、评论和依赖｜在商定入口实现并验证｜审查改动，按授权提交","用 implement 实现已确认的离开保护切片，把验证结果写入对应功能记录。",["mattpocock-skills:tdd","mattpocock-skills:code-review"]],
-["mattpocock-skills:tdd","先让行为测试失败","需要修复已复现缺陷｜关键行为值得回归测试","从可观察行为写失败用例，做最小修复，再整理实现。","从公开入口写一条红灯用例｜最小修改让它转绿｜整理实现并复验","用 tdd 写离开后旧表单不能提交的浏览器用例，同时检查请求和数据库。",["mattpocock-skills:code-review","pstack-codex:blast-radius"]],
-["mattpocock-skills:diagnosing-bugs","复现并定位致错机制","有错误、偶发问题或性能回退","先建立可重复的反馈，再用假设和对照定位原因，复跑原路径。","把现象缩成可重复的路径｜列假设并用日志或对照排除｜修复后走原路径","用 diagnosing-bugs 复现慢导航窗口内误提交，观察是否返回 201 并产生写入。",["mattpocock-skills:tdd"]],
-["pstack-codex:typescript-best-practices","收紧类型和输入边界","接口输入、表单状态或联合类型容易出现非法组合","在边界解析数据，用类型表达已保证的状态，并检查变体分支是否穷尽。","定位不可信输入｜用可辨识联合或必要的品牌类型表达约束｜核对每个分支","用 typescript-best-practices 检查电影创建响应解析和表单提交状态的类型。",["mattpocock-skills:code-review"]],
-["mattpocock-skills:implement-spec","按依赖集成多个工单","完整规格已拆出多个有依赖的实施工单","按阻塞关系推进。需要隔离时按授权用独立工作树，在集成分支验证整套规格。","查可领取的工单和依赖｜按边界实现并逐项验证｜集成后检查规格与证据","用 implement-spec 为多切片需求安排验证与集成，按连续录入、离开保护的依赖顺序核对。",["mattpocock-skills:code-review","mattpocock-skills:pr"]],
-["mattpocock-skills:code-review","分开审规范和需求","分支或拉取请求准备交付","从固定基线审两遍，一遍对照仓库约定，一遍对照工单与验收。","固定基线和范围｜分别对照规范与需求｜并列报告发现和证据","用 code-review 审离开保护的改动，规范轴看边界校验，需求轴看放弃与返回行为。",["pstack-codex:interrogate","mattpocock-skills:pr"]],
-["pstack-codex:blast-radius","查下游会受什么影响","接口、数据结构或共享逻辑发生变化","顺着调用方和契约追踪影响，用真实运行证明关键兼容假设。","锁定差异和主要调用方｜列出最重要的兼容假设｜运行真实入口验证","用 blast-radius 检查共享离开保护是否影响电影、磁力、返回导航和其他表单。",["mattpocock-skills:code-review"]],
-["pstack-codex:interrogate","专找能复现的缺陷","改动风险高，普通审查看过仍需反证","让评审尝试打破同一改动，再独立复跑发现，只报告证实的缺陷。","固定快照和预期｜按可用模式独立尝试反例｜复跑命令并合并同根因问题","用 interrogate 尝试在慢导航和浏览器前进时让旧表单写入，给出可复跑证据。",["mattpocock-skills:diagnosing-bugs"]],
-["pstack-codex:benchmark-checklist","审性能数字的可信度","准备引用性能比较或速度提升","查基线是否公平、是否完成等量工作、能否复跑，以及指标是否贴近用户场景。","对齐环境和工作量｜验证两组都成功完成｜复跑并核对指标意义","用 benchmark-checklist 核对列表查询提速是否使用同一数据库、相同筛选和等量返回。",["pstack-codex:show-me-your-work"]],
-["pstack-codex:create-verification-skill","沉淀可复用的验收入口","某组真实用户路径以后还要反复验收","把启动、诊断、操作路径和证据约定写成项目验证技能，并实际跑一遍。","盘点应用入口和已有检查｜记录可复用的启动与操作步骤｜运行真实路径并保留证据","用 create-verification-skill 将电影和磁力的创建、放弃与返回路径整理成可重复验收步骤。",["pstack-codex:maintain-verification-skill"]],
-["mattpocock-skills:pr","写拉取请求正文","改动已成形，需要让审查者知道看哪里","根据差异写目的、范围和验证，把工单与依赖放到审查者能找到的位置。","读当前差异与验收证据｜说明目的、范围和验证｜按项目约定关联 Linear 工单","用 pr 起草离开保护的拉取请求正文，说明对连续录入的依赖，关联工单并标出浏览器覆盖。",["pstack-codex:show-me-your-work"]],
-["pstack-codex:show-me-your-work","留下可回查的证据","需要说明结论怎么得出，或交接复验","只用实际操作和结果串起决策、命令、证据和结论。","按顺序收集真实命令和结果｜标出对应提交和环境｜列出还没覆盖的范围","用 show-me-your-work 整理离开保护合并预览的提交、验证范围和可复跑入口。",["mattpocock-skills:handoff"]],
-["mattpocock-skills:handoff","写下一次的恢复入口","要换会话、交给协作者，或从原型回到原任务","压缩当前上下文，保留状态、证据、风险和下一步。","固定当前分支与状态｜写下证据指针和未决问题｜给出一条可执行的恢复步骤","用 handoff 整理离开保护的接手说明，链接验证记录并标出应复跑的路径。",[]],
-["pstack-codex:technical-writing","梳理技术文档和说明","技术文档、提案或拉取请求需要解释清楚","用事实、结构和句子层面的检查整理技术内容。","确认读者和要解决的问题｜核对证据与组织层次｜把抽象判断改成具体条件","用 technical-writing 说明预览的浏览器覆盖、环境和复验入口。",["mattpocock-skills:pr"]],
-["mattpocock-skills:wizard","把人工步骤做成向导","一次性配置中存在必须由人操作的步骤","把确需人工完成的动作做成交互式 Bash 向导，给出清晰的输入和完成反馈。","区分自动步骤与人工步骤｜为人工步骤写提示和校验｜走一遍正常与取消路径","用 wizard 为需要本人完成的监控后台授权编写向导。",[]],
-["pstack-codex:maintain-verification-skill","维护现有验收技能","已有验证技能，运行路径或覆盖可能过时","对照源码和实际操作检查功能地图，只修验证技能自身的问题。","定位现有验收技能｜逐项做源码和实跑核对｜记录覆盖缺口或修好过时步骤","用 maintain-verification-skill 检查录入流程新增后，原有验收入口能否覆盖连续录入。",["pstack-codex:show-me-your-work"]],
-["pstack-codex:correct","给反复出错的地方加约束","同类错误已有至少两次可查证的记录","优先从架构、类型或检查消除误用入口，用过去的错误验证约束。","找到两个独立实例｜选最靠近错误源头的约束｜证明旧错误被拦截、正确行为通过","用 correct 检查是否反复绕过响应解析。如果证据成立，用已复现的错误验约束。",["mattpocock-skills:writing-for-agents"]],
-["pstack-codex:reflect","复盘并改进已用技能","想从当前会话找可复用的工作流改进","从判断、工具和盲点回看证据，只对实际用过的技能提出改进。","定位本轮可见证据｜分别检查判断、工具与盲点｜把改进落到具体技能","用 reflect 复盘一次跨分支验收，检查证据保留方式是否导致重复验证。",["pstack-codex:correct"]],
-["mattpocock-skills:retro","复盘本次开发过程","一次工作已收尾，想识别可保留和可改进的做法","回看本轮做法与结果，归纳下一次可采取的改动。","回看目标和实际过程｜区分偶发和重复问题｜留下可执行的改进","用 retro 复盘连续录入和离开保护的分层交付，找出能提前完成的合并检查。",["pstack-codex:reflect"]],
-["pstack-codex:teach","从源码讲清机制和来历","读者想理解某段实现以及为何这样设计","把运行过程和历史依据连起来，按读者节奏讲解。","用 how 追踪运行｜用 why 核对历史｜分段讲解并让读者跟进","用 teach 讲清放弃输入后旧表单为何锁住，以及返回原条目如何解锁。",["pstack-codex:how","pstack-codex:why"]],
-["mattpocock-skills:teach","用项目代码学一个概念","想在当前仓库学会一种做法","从当前工作区的实例出发，按读者的理解节奏讲解。","确认要学的概念｜找仓库内的对应实例｜让读者解释或应用一遍","用 teach 以电影创建响应为例，学习如何在请求边界解析数据。",["mattpocock-skills:wait-what"]],
-["mattpocock-skills:wait-what","换一种方式重新解释","刚才的解释没讲明白","回到读者卡住的点，用另一种表达重新讲一遍。","找出未理解的关系｜换一个具体入口或例子｜用短解释重新建立上下文","用 wait-what 用表单提交时间线重讲为什么慢导航会留下误提交窗口。",[]],
-["mattpocock-skills:writing-for-agents","写可执行的代理规则","需要修改代理说明或编写技能","把约束、触发条件与验证入口写给只读到局部上下文的执行者。","确认作用域与读者｜写清具体入口和完成标准｜删掉重复或难执行的指令","用 writing-for-agents 整理合并前授权与验收记录的项目规则，保持根约定和工作流一致。",["pstack-codex:correct"]],
-["mattpocock-skills:setup-matt-pocock-skills","配置工单与领域文档","新仓库第一次采用这套工程技能","配置工单系统、分流标签和领域文档布局。已有约定时先核对。","识别项目工单入口｜对齐标签和领域文件布局｜检查技能能找到配置","用 setup-matt-pocock-skills 核对 Linear、分流标签和根词汇表的现有配置。",["mattpocock-skills:triage","mattpocock-skills:domain-modeling"]],
-["pstack-codex:unslop","删掉技术说明里的套话","文档或拉取请求说明已经写好，想删掉套话和多余格式","删掉空话和重复的格式，保留原意、语气和可核对的事实。","找出空话、重复和多余格式｜改成直接的句子｜回查事实、限定条件和专有名词","用 unslop 精简离开保护的审查说明，保留浏览器覆盖范围、运行环境和复验入口。",["mattpocock-skills:pr"]]];
+const skills = [["agent-skills:using-agent-skills","按任务找技能","刚接手任务，或手头的问题涉及几个阶段","先看任务卡在哪一步，再选对应技能。一个任务可以按需要接着用几个技能。","说清当前目标和已有材料｜找出当前阶段与缺口｜按技能原文操作并复验","用 using-agent-skills 判断我该先澄清录入需求、拆工单，还是直接复现表单问题。",["agent-skills:interview-me","agent-skills:planning-and-task-breakdown","agent-skills:debugging-and-error-recovery"]],
+["agent-skills:interview-me","逐问确认真实需求","目标含糊，或提出的功能可能只是实现某个目标的手段","每次问一个关键问题，最后用用户认可的表述写清意图。","先提出对目标的判断｜逐个确认对象、目的和成功标准｜总结意图并交给用户确认","用 interview-me 逐个问清我为什么需要批量录入电影，以及做到什么程度才算解决问题。",["agent-skills:idea-refine","agent-skills:spec-driven-development"]],
+["agent-skills:idea-refine","比较不同产品方向","有个粗略想法，想先看几种做法和各自代价","展开候选方案，检验关键假设，再把选定方向写成一页。","把想法改写成具体问题｜提出不同方案并比较限制｜整理建议方向和待验证假设","用 idea-refine 比较每周精选的几个方向，说明各自需要什么数据，以及怎样验证用户愿意使用。",["agent-skills:spec-driven-development"]],
+["agent-skills:spec-driven-development","先写验收条件","新功能或大改动缺少可执行的规格","把目标、范围和验收条件写成规格。跨度大时，先划分可独立验证的能力。","核对现有行为与用户目标｜写清范围和可观察的验收条件｜确认规格后再进入计划","用 spec-driven-development 为电影表单的离开保护写规格，覆盖放弃、继续编辑和返回原条目。",["agent-skills:planning-and-task-breakdown"]],
+["agent-skills:planning-and-task-breakdown","拆成可验收的任务","已有规格，需要确定先后顺序与验证入口","按用户可验证的行为拆任务，标出前置依赖和完成条件。","从规格提取交付结果｜拆小任务并标明依赖｜逐项给出验证方法","用 planning-and-task-breakdown 把连续录入和离开保护拆成有前置关系的工单，每张都写清如何验收。",["agent-skills:incremental-implementation"]],
+["agent-skills:constraint-driven-development","把质量要求写进检查","质量要求没写清，或有人跳过测试、压低阈值来让检查通过","先查已有检查，再和用户定质量要求，把能自动检查的要求接到开发流程里。","盘点项目规则和已有检查｜确认阈值、例外与记录位置｜接入检查并核对改动没有降低门槛","用 constraint-driven-development 盘点电影管理后台已有的类型、测试和无障碍检查，整理哪些值得写进 CONSTRAINTS.md。",["agent-skills:ci-cd-and-automation","agent-skills:code-review-and-quality"]],
+["agent-skills:api-and-interface-design","定接口与兼容边界","要新增接口，或调整模块之间的数据契约","先明确调用方、输入、输出和错误，再决定接口形状和兼容方式。","列出调用方与调用场景｜明确契约和错误行为｜核对兼容性并写契约测试","用 api-and-interface-design 设计电影列表筛选接口，说明查询参数、返回结构和旧客户端的兼容行为。",["agent-skills:test-driven-development","agent-skills:deprecation-and-migration"]],
+["agent-skills:source-driven-development","查对应版本的官方文档","依赖的接口或行为可能随版本变化","先读项目实际安装的版本，再按对应官方文档实现，保留关键引用。","从锁文件确认版本｜核对官方文档和示例｜用项目里的最小用例验证","用 source-driven-development 按项目当前版本核对浏览器路由的离开拦截接口，并给出可复跑验证。",["agent-skills:api-and-interface-design","agent-skills:incremental-implementation"]],
+["agent-skills:doubt-driven-development","独立检查关键假设","架构选择代价高，或改动触及陌生、难回滚的逻辑","把产物和验收契约交给独立审阅，再根据证据修正结果。","提取最小可审阅的产物与契约｜独立核查遗漏和反例｜验证发现并修正成立的问题","用 doubt-driven-development 检查把电影和磁力的离开保护提到共享层后，返回旧页面时是否会带回错误状态。",["agent-skills:code-review-and-quality"]],
+["agent-skills:context-engineering","给任务补齐上下文","新会话接手，或改动经常偏离仓库约定","给当前任务只加载必要的规则、决策和代码入口，缺什么再补。","读仓库约定和交接记录｜定位工单、代码入口及相关决策｜把关键链接和下一步留给接手人","用 context-engineering 接手电影列表筛选，先列出规则、相关工单、接口入口和现有验收命令。",["agent-skills:planning-and-task-breakdown","agent-skills:source-driven-development"]],
+["agent-skills:incremental-implementation","每次交付一小段","改动跨多个模块，合起来才验证会让问题难定位","先跑通一条小而完整的路径。每一步验证通过后，再扩展范围。","选一个可独立验证的切片｜做最小实现并运行相关检查｜核对结果后再实现下一个切片","用 incremental-implementation 先做电影列表显式筛选的一条路径，验证界面和接口，再扩展到其他条件。",["agent-skills:test-driven-development","agent-skills:code-review-and-quality"]],
+["agent-skills:frontend-ui-engineering","实现可用的界面","要新建或调整页面、交互和响应式布局","沿用项目组件，写清交互状态，再在浏览器里核对视觉和操作。","确认用户路径与现有组件｜实现正常、空白和失败状态｜核对窄屏、键盘和焦点","用 frontend-ui-engineering 实现电影录入的离开确认，在宽屏和窄屏验证焦点、键盘操作和返回行为。",["agent-skills:browser-testing-with-devtools"]],
+["agent-skills:test-driven-development","先让验收用例失败","要修复可复现的缺陷，或改动需要明确的行为保证","写好失败用例，再用最小修改让它通过，最后整理实现。","从公开入口写一条行为用例｜确认失败原因符合预期并修复｜复跑相关用例再整理","用 test-driven-development 先写放弃输入后旧表单不能再提交的回归测试，同时观察请求和数据写入。",["agent-skills:browser-testing-with-devtools","agent-skills:code-review-and-quality"]],
+["agent-skills:browser-testing-with-devtools","在浏览器验证真实路径","要检查页面行为、网络请求、控制台或视觉结果","配置 Chrome DevTools MCP 后，在真实浏览器操作并记录关键证据。","启动隔离的验证环境｜复现操作并检查页面、网络和控制台｜复跑原路径并记录结果","用 browser-testing-with-devtools 在真实浏览器验证电影表单放弃输入后的慢导航路径，核对是否发出创建请求。",["agent-skills:debugging-and-error-recovery","agent-skills:code-review-and-quality"]],
+["agent-skills:debugging-and-error-recovery","复现并找到根因","行为和预期不符，或已有测试、构建突然失败","先拿到可重复的失败，再用日志和对照缩小范围，修完走原触发路径。","记录能够重复的失败｜用日志或对照检验假设｜最小修复并复跑失败用例","用 debugging-and-error-recovery 复现慢导航期间旧表单仍可提交，定位是哪一步放行了旧页面的输入。",["agent-skills:test-driven-development"]],
+["agent-skills:code-review-and-quality","按五个维度审查改动","差异或拉取请求准备合并","对照需求和测试，从正确性、可读性、架构、安全性、性能五方面审查代码。","核对目标、基线及验收条件｜先审测试，再按五个维度审实现｜报告可定位问题和验证证据","用 code-review-and-quality 审查电影表单离开保护，重点核对返回时的解锁行为、错误处理和浏览器用例。",["agent-skills:code-simplification","agent-skills:security-and-hardening","agent-skills:git-workflow-and-versioning"]],
+["agent-skills:code-simplification","在保持行为的前提下简化代码","行为已正确，但重复、嵌套或间接调用让代码难读","删掉用不到的层和分支，用现有测试证明外部行为还符合契约。","找出最费解的代码路径｜做有明确收益的简化｜复跑原行为测试并检查差异","用 code-simplification 简化两类录入表单的重复状态处理，并验证放弃、继续编辑和返回的行为。",["agent-skills:code-review-and-quality"]],
+["agent-skills:security-and-hardening","检查输入和权限边界","改动涉及不可信输入、权限、存储或外部集成","从信任边界检查校验、权限和数据暴露，用防御性测试核对保护是否生效。","画出输入和权限检查的位置｜核对服务端校验和最小权限｜验证非法输入被拒绝且合法请求通过","用 security-and-hardening 检查电影新增接口的服务端校验和错误响应，确认无效输入不会写入数据库。",["agent-skills:code-review-and-quality"]],
+["agent-skills:performance-optimization","先测瓶颈再优化","有明确性能指标，或数据表明关键路径变慢","记录基线，定位真正限制吞吐或耗时的地方，再用同条件复测。","明确指标、环境和工作量｜用剖析或查询计划定位瓶颈｜改动后用同一基线复测","用 performance-optimization 用相同数据和筛选条件比较电影列表查询耗时，先看查询计划再决定是否调整索引。",["agent-skills:observability-and-instrumentation"]],
+["agent-skills:git-workflow-and-versioning","整理分支、提交和版本","要提交、推送，或多层改动之间有依赖","先确认历史和分支基线，把能独立审查的改动放进对应提交。","检查工作树、基线和分支状态｜按边界整理改动与提交说明｜核对差异和远端更新","用 git-workflow-and-versioning 按仓库约定把连续录入和离开保护整理成有依赖的两层提交，逐层核对差异。",["agent-skills:ci-cd-and-automation","agent-skills:shipping-and-launch"]],
+["agent-skills:ci-cd-and-automation","让质量检查自动运行","需要把已有检查放进持续集成，或调整构建与发布流程","复用本地命令，明确触发条件、权限和失败信号，再验证流水线。","核对本地命令、运行时与依赖｜配置检查触发条件和权限｜用成功和失败的运行结果验证","用 ci-cd-and-automation 把电影管理后台的检查接入持续集成，复用仓库已有命令并核对失败能阻止交付。",["agent-skills:shipping-and-launch"]],
+["agent-skills:shipping-and-launch","准备发布和回滚","功能即将上线，需要明确放行、观测和回滚条件","用验收证据决定是否放行。上线后看关键指标，达到回滚条件就按计划处置。","核对发布前检查和生产依赖｜写清放行范围、观察指标和回滚路径｜按授权发布并验证线上行为","用 shipping-and-launch 为电影管理后台的一次发布拟定放行检查、上线后复验和回滚条件。",["agent-skills:observability-and-instrumentation"]],
+["agent-skills:observability-and-instrumentation","补足日志、指标和告警","线上问题缺少可用证据，或新功能需要观测运行状况","围绕用户能感知的失败补日志、指标和告警，验证能从症状定位到请求。","确定要观察的用户路径和错误｜选日志字段、指标和告警条件｜用脱敏验证核对信号","用 observability-and-instrumentation 为电影资料补全添加可追踪的错误和耗时记录，用脱敏样本确认日志够定位问题。",["agent-skills:debugging-and-error-recovery","agent-skills:performance-optimization"]],
+["agent-skills:deprecation-and-migration","迁移旧数据和调用方","要停用旧接口、迁移数据或替换实现","先兼容旧数据和调用方，逐步迁移并核对，满足退出条件后再清理旧路径。","盘点旧数据与调用者｜设计兼容期、迁移和回滚步骤｜验证新旧路径及清理条件","用 deprecation-and-migration 为电影资料字段迁移写出兼容读写、补数据和清理旧字段的条件。",["agent-skills:documentation-and-adrs","agent-skills:shipping-and-launch"]],
+["agent-skills:documentation-and-adrs","记录决策与检查文档","要解释架构取舍，或文档可能和实际实现不一致","把决策原因和后果留档，核对已有文档所描述的入口和行为还成立。","读代码、规则与已有决策｜记录选择、原因及影响｜核对示例、链接和验证入口","用 documentation-and-adrs 记录电影资料补全的触发时机、数据归属和失败处理，并用现有入口核对文档。",["agent-skills:context-engineering"]]];
 const phases = [
   {
     "title": "定义任务",
@@ -581,40 +565,21 @@ const phases = [
     "icon": "<circle cx='12' cy='12' r='9'/><path d='m15.5 8.5-2 5-5 2 2-5z'/>",
     "sections": [
       [
-        "读现状",
+        "从目标到任务",
         [
-          "pstack-codex:how",
-          "查动机",
-          "pstack-codex:why"
+          "agent-skills:interview-me",
+          "收敛方向",
+          "agent-skills:idea-refine",
+          "写验收",
+          "agent-skills:spec-driven-development",
+          "拆任务",
+          "agent-skills:planning-and-task-breakdown"
         ]
       ],
       [
-        "把共识写进工单",
+        "不知道用哪个技能",
         [
-          "mattpocock-skills:grill-with-docs",
-          "写规格",
-          "mattpocock-skills:to-spec",
-          "拆切片",
-          "mattpocock-skills:to-tickets"
-        ]
-      ],
-      [
-        "澄清、调查与分流",
-        [
-          "mattpocock-skills:ask-matt",
-          "mattpocock-skills:grilling"
-        ],
-        [
-          "mattpocock-skills:grill-me",
-          "mattpocock-skills:to-questionnaire"
-        ],
-        [
-          "pstack-codex:sharpen",
-          "mattpocock-skills:research"
-        ],
-        [
-          "mattpocock-skills:triage",
-          "mattpocock-skills:wayfinder"
+          "agent-skills:using-agent-skills"
         ]
       ]
     ],
@@ -627,30 +592,23 @@ const phases = [
     "icon": "<path d='m5 16-1 4 4-1L20 7l-3-3zM15 6l3 3'/>",
     "sections": [
       [
-        "决定改动的形状",
+        "定接口与依据",
         [
-          "pstack-codex:architect",
-          "比候选",
-          "pstack-codex:arena"
+          "agent-skills:source-driven-development",
+          "定契约",
+          "agent-skills:api-and-interface-design"
         ]
       ],
       [
-        "跑一遍关键交互",
+        "补充质量约束",
         [
-          "mattpocock-skills:prototype"
+          "agent-skills:constraint-driven-development"
         ]
       ],
       [
-        "统一词汇和模块边界",
+        "核查高风险设计",
         [
-          "mattpocock-skills:domain-modeling",
-          "mattpocock-skills:codebase-design"
-        ]
-      ],
-      [
-        "扩大设计调查",
-        [
-          "mattpocock-skills:improve-codebase-architecture"
+          "agent-skills:doubt-driven-development"
         ]
       ]
     ],
@@ -663,24 +621,17 @@ const phases = [
     "icon": "<path d='M14 6a5 5 0 0 0-6 6L3 17a2 2 0 0 0 3 3l5-5a5 5 0 0 0 6-6l-3 3-2-2 3-3z'/>",
     "sections": [
       [
-        "实现已确认的范围",
+        "按可验证的切片实现",
         [
-          "mattpocock-skills:implement",
-          "先跑红灯",
-          "mattpocock-skills:tdd"
+          "agent-skills:context-engineering",
+          "拿到上下文",
+          "agent-skills:incremental-implementation"
         ]
       ],
       [
-        "修缺陷，收紧类型",
+        "涉及浏览器界面",
         [
-          "mattpocock-skills:diagnosing-bugs",
-          "pstack-codex:typescript-best-practices"
-        ]
-      ],
-      [
-        "多工单集成",
-        [
-          "mattpocock-skills:implement-spec"
+          "agent-skills:frontend-ui-engineering"
         ]
       ]
     ],
@@ -688,42 +639,45 @@ const phases = [
   },
   {
     "title": "验证审查",
-    "gate": [
-      "项目验收",
-      "运行适用的静态检查、测试和构建，复跑原触发路径。"
-    ],
     "color": "#42dca5",
     "sub": "行为证据与影响",
     "icon": "<path d='M9 3h6m-5 0v7l-5 9a1 1 0 0 0 1 2h12a1 1 0 0 0 1-2l-5-9V3M8 15h8'/>",
     "sections": [
       [
-        "对照项目规范和需求",
+        "测试真实行为",
         [
-          "mattpocock-skills:code-review"
+          "agent-skills:test-driven-development",
+          "检查浏览器",
+          "agent-skills:browser-testing-with-devtools"
         ]
       ],
       [
-        "检查下游与反例",
+        "准备合并",
         [
-          "pstack-codex:blast-radius",
-          "pstack-codex:interrogate"
+          "agent-skills:code-review-and-quality"
         ]
       ],
       [
-        "把验收做成可重复的入口",
+        "按风险检查",
         [
-          "pstack-codex:create-verification-skill"
-        ]
-      ],
-      [
-        "模型与性能专项",
+          "agent-skills:debugging-and-error-recovery"
+        ],
         [
-          "pstack-codex:statechart",
-          "pstack-codex:benchmark-checklist"
+          "agent-skills:code-simplification"
+        ],
+        [
+          "agent-skills:security-and-hardening"
+        ],
+        [
+          "agent-skills:performance-optimization"
         ]
       ]
     ],
-    "extraAt": 3
+    "extraAt": 2,
+    "gate": [
+      "项目验收",
+      "运行适用的静态检查、测试和构建，复跑原触发路径。"
+    ]
   },
   {
     "title": "交付合并",
@@ -732,21 +686,13 @@ const phases = [
     "icon": "<path d='M14 4c3-2 6-2 7-1s1 4-1 7l-6 6-6-6zM8 10H4l-2 4 6 1m6 1v4l-4 2-1-6M5 18l-2 3m13-14h.1'/>",
     "sections": [
       [
-        "准备审查材料",
+        "从提交到上线",
         [
-          "mattpocock-skills:pr",
-          "附证据",
-          "pstack-codex:show-me-your-work"
-        ]
-      ],
-      [
-        "技术说明与人工操作",
-        [
-          "pstack-codex:technical-writing",
-          "pstack-codex:unslop"
-        ],
-        [
-          "mattpocock-skills:wizard"
+          "agent-skills:git-workflow-and-versioning",
+          "接入检查",
+          "agent-skills:ci-cd-and-automation",
+          "核对上线条件",
+          "agent-skills:shipping-and-launch"
         ]
       ]
     ],
@@ -763,41 +709,19 @@ const phases = [
     "icon": "<path d='m12 3 8 4v5c0 4-4 7-8 9-4-2-8-5-8-9V7zM8 12l3 3 5-6'/>",
     "sections": [
       [
-        "留下恢复入口",
+        "观测并维护线上行为",
         [
-          "mattpocock-skills:handoff"
-        ]
-      ],
-      [
-        "维护验收，拦住复发",
-        [
-          "pstack-codex:maintain-verification-skill",
-          "pstack-codex:correct"
-        ]
-      ],
-      [
-        "复盘与讲解",
-        [
-          "pstack-codex:reflect",
-          "mattpocock-skills:retro"
+          "agent-skills:observability-and-instrumentation"
         ],
         [
-          "pstack-codex:teach",
-          "mattpocock-skills:teach"
+          "agent-skills:deprecation-and-migration"
         ],
         [
-          "mattpocock-skills:wait-what",
-          "mattpocock-skills:writing-for-agents"
-        ]
-      ],
-      [
-        "新仓库配置",
-        [
-          "mattpocock-skills:setup-matt-pocock-skills"
+          "agent-skills:documentation-and-adrs"
         ]
       ]
     ],
-    "extraAt": 2
+    "extraAt": 1
   }
 ];
 const byName = new Map(skills.map(([name, ...info]) => [name, info]));
@@ -813,39 +737,8 @@ const toggle = document.querySelector("#panel-toggle");
 const copy = document.querySelector("#copy-example");
 const copyText = document.querySelector("#copy-text");
 const result = document.querySelector("#result");
-const officialSkills = {
-  "ask-matt": ["skills/engineering/ask-matt/SKILL.md",true],
-  "diagnosing-bugs": ["skills/engineering/diagnosing-bugs/SKILL.md",false],
-  "grill-with-docs": ["skills/engineering/grill-with-docs/SKILL.md",true],
-  "triage": ["skills/engineering/triage/SKILL.md",true],
-  "improve-codebase-architecture": ["skills/engineering/improve-codebase-architecture/SKILL.md",true],
-  "setup-matt-pocock-skills": ["skills/engineering/setup-matt-pocock-skills/SKILL.md",true],
-  "tdd": ["skills/engineering/tdd/SKILL.md",false],
-  "to-spec": ["skills/engineering/to-spec/SKILL.md",true],
-  "to-tickets": ["skills/engineering/to-tickets/SKILL.md",true],
-  "wayfinder": ["skills/engineering/wayfinder/SKILL.md",true],
-  "implement": ["skills/engineering/implement/SKILL.md",true],
-  "implement-spec": ["skills/engineering/implement-spec/SKILL.md",true],
-  "prototype": ["skills/engineering/prototype/SKILL.md",false],
-  "research": ["skills/engineering/research/SKILL.md",false],
-  "domain-modeling": ["skills/engineering/domain-modeling/SKILL.md",false],
-  "codebase-design": ["skills/engineering/codebase-design/SKILL.md",false],
-  "code-review": ["skills/engineering/code-review/SKILL.md",false],
-  "pr": ["skills/engineering/pr/SKILL.md",false],
-  "retro": ["skills/engineering/retro/SKILL.md",true],
-  "wizard": ["skills/engineering/wizard/SKILL.md",false],
-  "grill-me": ["skills/productivity/grill-me/SKILL.md",true],
-  "grilling": ["skills/productivity/grilling/SKILL.md",false],
-  "handoff": ["skills/productivity/handoff/SKILL.md",true],
-  "teach": ["skills/productivity/teach/SKILL.md",true],
-  "to-questionnaire": ["skills/productivity/to-questionnaire/SKILL.md",true],
-  "wait-what": ["skills/productivity/wait-what/SKILL.md",true],
-  "writing-for-agents": ["skills/productivity/writing-for-agents/SKILL.md",false]
-};
-const plugins = {
-  mp: ["波考克官方技能", "1.3.2", "https://github.com/mattpocock/skills/blob/d1478fcb140db0b93c0c8df17bcfd311844749d0/"],
-  pt: ["开发工作栈技能", "0.3.0", "https://github.com/starlightliu/pstack-codex/blob/60c53108873dc7b6ee6ba2eda85ab4745b9db343/plugins/pstack-codex/"]
-};
+const skillSource = "https://github.com/addyosmani/agent-skills/blob/39b723ceebf81474d0557c1fecd01eddab585563/skills/";
+const pluginVersion = "0.6.16";
 const smallScreen = matchMedia("(max-width: 680px)");
 let active = null;
 let pinned = false;
@@ -881,7 +774,6 @@ function makeNode(name, phase, isStart) {
   button.setAttribute("aria-controls", "skill-panel");
   button.setAttribute("aria-expanded", "false");
   const shape = element("span", "shape");
-  shape.dataset.plugin = name.startsWith("pstack-codex:") ? "pt" : "mp";
   shape.setAttribute("aria-hidden", "true");
   button.append(shape, element("strong", "", skillName(name)), element("span", "short", short));
   if (isStart) button.append(element("span", "start", "入口"));
@@ -1009,17 +901,13 @@ function section(title, preview, content) {
 
 function renderPanel(name) {
   const [short, when, what, steps, example, next] = byName.get(name);
-  const isPstack = name.startsWith("pstack-codex:");
   const displayName = skillName(name);
-  const [plugin, version, sourceBase] = plugins[isPstack ? "pt" : "mp"];
-  const [skillPath, manual] = isPstack ? ["skills/" + displayName + "/SKILL.md", false] : officialSkills[displayName];
   const { phase } = nodeByName.get(name);
   panel.style.setProperty("--lane", phase.color);
   panelTitle.textContent = displayName;
   copy.textContent = "复制调用示例";
   copyText.hidden = true;
-  const tags = [short, phase.title, plugin];
-  if (manual) tags.push("手动调用");
+  const tags = [short, phase.title, "Agent Skills"];
   panelTags.replaceChildren(...tags.map((tag) => element("span", "", tag)));
   const triggers = element("div", "panel-when");
   for (const text of when.split("｜")) triggers.append(element("div", "", text));
@@ -1038,10 +926,10 @@ function renderPanel(name) {
     details.append(section("接下来可用", next.map(skillName).join(" · "), related));
   }
   const source = element("a", "", "查看技能原文");
-  source.href = sourceBase + skillPath;
+  source.href = skillSource + displayName + "/SKILL.md";
   source.target = "_blank";
   source.rel = "noopener";
-  details.append(section("来源", plugin + " · " + version, source));
+  details.append(section("来源", "Agent Skills · " + pluginVersion, source));
   panelBody.replaceChildren(
     element("h3", "panel-label", "什么时候用"), triggers,
     element("h3", "panel-label", "它做什么"), element("p", "panel-what", what),
