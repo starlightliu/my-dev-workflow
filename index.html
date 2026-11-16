@@ -494,6 +494,32 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
   .node-row { max-width: 560px; }
   #skill-panel { width: calc(100vw - 20px); max-height: min(76dvh, 620px); }
 }
+
+#common-flow { margin: 20px 0 0; padding-top: 16px; border-top: 1px solid var(--border); scroll-margin-top: 14px; }
+#common-flow-title { margin: 0 0 12px; font: 750 clamp(17px, 2vw, 23px)/1.3 var(--sans-map); }
+#common-flow figcaption { max-width: none; margin: 0 0 15px; }
+#common-flow figcaption p { margin: 0; color: var(--text-dim); font: 500 13px/1.55 var(--sans-map); }
+#common-flow .flow-steps { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); align-items: start; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.flow-step { min-width: 0; padding: 10px 8px 0 0; border-top: 2px solid #ffc43d; scroll-margin-top: 14px; }
+.flow-step h3 { margin: 0 0 7px; color: #ffc43d; font: 750 15px/1.4 var(--sans-map); }
+.flow-step h3 span { margin-inline-end: 5px; font: 700 11px/1.3 var(--mono-map); color: var(--text-dim); }
+.flow-skills { display: flex; flex-direction: column; align-items: start; min-height: 57px; gap: 3px; margin: 0 0 5px; }
+#workflow .flow-skill { text-align: start; padding: 2px 0; border: 0; background: transparent; color: #b7d2f4; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; font: 600 11px/1.4 var(--mono-map); }
+.flow-skill:focus-visible, #flow-jump:focus-visible { outline: 2px solid #f4f7fd; outline-offset: 3px; }
+.flow-step p { margin: 0 0 9px; color: var(--text-dim); font: 500 12px/1.55 var(--sans-map); }
+.flow-step p b { color: var(--text); display: block; }
+.flow-step details { border-top: 1px solid var(--border); padding-top: 4px; }
+.flow-step summary { padding: 4px 0; color: var(--text); cursor: pointer; font: 600 12px/1.4 var(--sans-map); }
+.flow-step textarea { width: 100%; min-height: 8.7em; margin: 4px 0; padding: 7px; resize: vertical; color: var(--text); background: var(--surface); border: 1px solid var(--border-bright); border-radius: 6px; font: 500 12px/1.5 var(--sans-map); }
+#workflow #flow-jump { display: inline-flex; align-items: center; text-decoration: none; }
+@media (max-width: 990px) {
+  #common-flow .flow-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  #common-flow .flow-steps { grid-template-columns: 1fr; }
+  .flow-skills { min-height: 0; }
+  .flow-step textarea { min-height: 5.5em; }
+}
 </style>
 </head>
 <body>
@@ -511,12 +537,78 @@ body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--
     <div class="controls" aria-label="技能筛选">
       <label>查找技能 <input id="query" type="search" placeholder="名称、场景或工单" autocomplete="off"></label>
       <button class="control" id="extras" type="button" aria-pressed="false" aria-controls="phases">展开按需技能</button>
+      <a class="control" id="flow-jump" href="#common-flow">常用流程</a>
       <span id="result" aria-live="polite"></span>
     </div>
   </header>
   <figure id="workflow-map" aria-label="六个开发阶段的技能图">
     <div class="map-scroll"><div class="phase-grid" id="phases"></div></div>
     <figcaption hidden>按六个开发阶段查找技能</figcaption>
+  </figure>
+  <figure id="common-flow" aria-labelledby="common-flow-title">
+    <figcaption><h2 id="common-flow-title">常用流程 · MyNextPick 电影待看清单</h2><p>以一个假设的新功能为例，给电影列表加上待看标记和筛选。</p></figcaption>
+    <ol class="flow-steps">
+      <li class="flow-step">
+        <h3><span>1</span>澄清需求</h3>
+        <div class="flow-skills"><button class="flow-skill" type="button" data-flow-skill="agent-skills:interview-me">interview-me</button></div>
+        <p><b>确认意图</b>问清谁在用、何时加片、看完怎么移出。留下一份经用户确认的需求摘要。</p>
+        <details name="workflow-example">
+          <summary>调用示例</summary>
+          <textarea aria-label="澄清需求调用示例" readonly>用 $agent-skills:interview-me 帮我想清楚为什么要在 MyNextPick 加电影待看清单。每次问一个问题，最后让我确认使用场景、加入和移除的时机，以及首版范围。</textarea>
+          <button class="control flow-copy" type="button" aria-live="polite">复制调用示例</button>
+        </details>
+      </li>
+      <li class="flow-step">
+        <h3><span>2</span>写规格</h3>
+        <div class="flow-skills"><button class="flow-skill" type="button" data-flow-skill="agent-skills:spec-driven-development">spec-driven-development</button></div>
+        <p><b>写出验收条件</b>把加入、移除、筛选、重复加入和刷新后保留状态写成验收条件。</p>
+        <details name="workflow-example">
+          <summary>调用示例</summary>
+          <textarea aria-label="写规格调用示例" readonly>用 $agent-skills:spec-driven-development 根据我确认的需求写待看清单规格。写清加入、移除、筛选、重复加入和刷新后的预期行为，再请我确认验收条件。</textarea>
+          <button class="control flow-copy" type="button" aria-live="polite">复制调用示例</button>
+        </details>
+      </li>
+      <li class="flow-step">
+        <h3><span>3</span>拆工单</h3>
+        <div class="flow-skills"><button class="flow-skill" type="button" data-flow-skill="agent-skills:planning-and-task-breakdown">planning-and-task-breakdown</button></div>
+        <p><b>明确先后顺序</b>先交付能加入并查看待看的切片，再补移除。为两张工单分别写验收和依赖。</p>
+        <details name="workflow-example">
+          <summary>调用示例</summary>
+          <textarea aria-label="拆工单调用示例" readonly>用 $agent-skills:planning-and-task-breakdown 把待看清单规格拆成两张 Linear 工单草稿。第一张覆盖加入并查看，第二张覆盖移除。写明依赖、验证命令和预期结果。</textarea>
+          <button class="control flow-copy" type="button" aria-live="polite">复制调用示例</button>
+        </details>
+      </li>
+      <li class="flow-step">
+        <h3><span>4</span>实现</h3>
+        <div class="flow-skills"><button class="flow-skill" type="button" data-flow-skill="agent-skills:incremental-implementation">incremental-implementation</button><button class="flow-skill" type="button" data-flow-skill="agent-skills:test-driven-development">test-driven-development</button></div>
+        <p><b>交付可运行的切片</b>每次只做一个切片。先让行为测试失败，再写最小实现让它通过。</p>
+        <details name="workflow-example">
+          <summary>调用示例</summary>
+          <textarea aria-label="实现调用示例" readonly>用 $agent-skills:incremental-implementation 实现依赖已满足的待看清单工单。用 $agent-skills:test-driven-development 先写一条会失败的行为测试，再做最小实现并复跑。</textarea>
+          <button class="control flow-copy" type="button" aria-live="polite">复制调用示例</button>
+        </details>
+      </li>
+      <li class="flow-step">
+        <h3><span>5</span>测试</h3>
+        <div class="flow-skills"><button class="flow-skill" type="button" data-flow-skill="agent-skills:browser-testing-with-devtools">browser-testing-with-devtools</button></div>
+        <p><b>保留验收结果</b>从电影列表加入，筛选待看并刷新，移出后核对列表和请求。</p>
+        <details name="workflow-example">
+          <summary>调用示例</summary>
+          <textarea aria-label="测试调用示例" readonly>用 $agent-skills:browser-testing-with-devtools 通过已配置的 Chrome DevTools MCP 在预览环境走一遍待看清单。验证加入、重复加入、筛选、刷新后保留和移除，记录请求、页面结果和失败项。</textarea>
+          <button class="control flow-copy" type="button" aria-live="polite">复制调用示例</button>
+        </details>
+      </li>
+      <li class="flow-step">
+        <h3><span>6</span>发布</h3>
+        <div class="flow-skills"><button class="flow-skill" type="button" data-flow-skill="agent-skills:code-review-and-quality">code-review-and-quality</button><button class="flow-skill" type="button" data-flow-skill="agent-skills:shipping-and-launch">shipping-and-launch</button></div>
+        <p><b>核对放行与回滚</b>审查差异和验收证据，写好回滚步骤。获准后发布，到线上复验。</p>
+        <details name="workflow-example">
+          <summary>调用示例</summary>
+          <textarea aria-label="发布调用示例" readonly>先用 $agent-skills:code-review-and-quality 审查待看清单的差异和验收证据，再用 $agent-skills:shipping-and-launch 准备放行条件、线上复验和回滚步骤。等我授权后再发布。</textarea>
+          <button class="control flow-copy" type="button" aria-live="polite">复制调用示例</button>
+        </details>
+      </li>
+    </ol>
   </figure>
   <aside id="skill-panel" aria-labelledby="panel-title" hidden>
     <div class="panel-actions">
@@ -1029,29 +1121,50 @@ panel.addEventListener("pointerenter", () => clearTimeout(closeTimer));
 panel.addEventListener("pointerleave", queueClose);
 panel.addEventListener("focusout", queueClose);
 panel.addEventListener("pointerdown", () => { pinned = true; });
+async function writeClipboard(prompt) {
+  if (!navigator.clipboard?.writeText) return false;
+  try {
+    await navigator.clipboard.writeText(prompt);
+    return true;
+  } catch (error) {
+    if (error.name !== "NotAllowedError" && error.name !== "SecurityError") throw error;
+    return false;
+  }
+}
+
+function copySelectedText(field, button) {
+  field.focus({ preventScroll: true });
+  field.select();
+  const copied = document.execCommand?.("copy") === true;
+  if (copied) button.focus({ preventScroll: true });
+  return copied;
+}
+
+document.querySelector("#common-flow").addEventListener("click", async (event) => {
+  const skillButton = event.target.closest("[data-flow-skill]");
+  if (skillButton) {
+    jumpTo(skillButton.dataset.flowSkill);
+    return;
+  }
+  const button = event.target.closest(".flow-copy");
+  if (!button) return;
+  const field = button.closest("details").querySelector("textarea");
+  const copied = await writeClipboard(field.value) || copySelectedText(field, button);
+  button.textContent = copied ? "已复制" : "请手动复制";
+});
+
 copy.addEventListener("click", async () => {
   const id = active;
   if (!id) return;
   pinned = true;
   const example = byName.get(id)[4];
   const prompt = example.replace("用 " + skillName(id) + " ", () => "用 $" + id + " ");
-  let copied = false;
-  if (navigator.clipboard?.writeText) {
-    try {
-      await navigator.clipboard.writeText(prompt);
-      copied = true;
-    } catch (error) {
-      if (error.name !== "NotAllowedError" && error.name !== "SecurityError") throw error;
-    }
-  }
+  let copied = await writeClipboard(prompt);
   if (active !== id) return;
   if (!copied) {
     copyText.value = prompt;
     copyText.hidden = false;
-    copyText.focus({ preventScroll: true });
-    copyText.select();
-    copied = document.execCommand?.("copy") === true;
-    if (copied) copy.focus({ preventScroll: true });
+    copied = copySelectedText(copyText, copy);
   }
   copyText.hidden = copied;
   copy.textContent = copied ? "已复制" : "请手动复制";
